@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 
@@ -20,5 +21,8 @@ class MainActivity : AppCompatActivity() {
 
         val btServiceThread = Thread(BluetoothService())
         btServiceThread.start()
+
+        textViewBPM.setText("Pomiar...")
+        textViewIBI.setText("Pomiar...")
     }
 }
