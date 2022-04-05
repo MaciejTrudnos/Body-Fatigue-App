@@ -1,10 +1,6 @@
 package com.mtdeveloper.bodyfatigue
 
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothSocket
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -19,10 +15,30 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        val btServiceThread = Thread(BluetoothService())
-        btServiceThread.start()
-
         textViewBPM.setText("Pomiar...")
         textViewIBI.setText("Pomiar...")
+
+        var bluetoothService = BluetoothService()
+        var bluetoothSocket = bluetoothService.connect()
+
+        Thread({
+            while (true)
+            {
+                var data = bluetoothService
+                    .readBluetoothData(bluetoothSocket)
+                    .split(";").toList()
+
+                Log.i("btdata1", data[0])
+                Log.i("btdata2", data[1])
+
+                runOnUiThread {
+                    textViewBPM.setText(data[0])
+                }
+
+                runOnUiThread {
+                    textViewIBI.setText(data[1])
+                }
+            }
+        }).start()
     }
 }
