@@ -1,4 +1,4 @@
-package com.mtdeveloper.bodyfatigue
+package com.mtdeveloper.bodyfatigue.database
 
 import androidx.room.TypeConverter
 import java.time.LocalDateTime
