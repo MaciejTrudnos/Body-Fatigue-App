@@ -104,13 +104,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun mock(heartRateDao: HeartRateDao, sleepTimeDao: SleepTimeDao){
         Log.i("Sleep", "START")
-
-        var sleepStart = LocalDateTime.now()
+        var startHour = 22
+        var current = "2022-04-28 ${startHour}:15:17"
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss")
+        val sleepStart = LocalDateTime.parse(current, formatter)
 
         var st = SleepTime(sleepStart, LocalDateTime.MIN)
         var stId = sleepTimeDao.insert(st)
 
-        var startHour = 22
+
 
         for (i in 1..10) {
             var bpmRnds = (40..140).random()
@@ -156,7 +158,9 @@ class MainActivity : AppCompatActivity() {
             Thread.sleep(100)
         }
 
-        var sleepStop = LocalDateTime.now()
+        var current3 = "2022-04-29 8:40:58"
+        val sleepStop = LocalDateTime.parse(current3, formatter)
+
         sleepTimeDao.updateSleepTime(stId.toInt(), sleepStop)
 
         Log.i("Sleep", "STOP")

@@ -2,19 +2,13 @@ package com.mtdeveloper.bodyfatigue
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import androidx.room.Room
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
 import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
-import com.mtdeveloper.bodyfatigue.database.dao.HeartRateDao
-import com.mtdeveloper.bodyfatigue.database.dao.SleepTimeDao
 import kotlinx.android.synthetic.main.activity_rest_heart.*
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class RestHeartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,39 +20,71 @@ class RestHeartActivity : AppCompatActivity() {
             AppDatabase::class.java, "AppDatabase"
         ).allowMainThreadQueries().build()
 
-        val sleepTimeId = db
+        val lastSleepTime = db
             .sleepTimeDao()
             .getLastSleepTime()
-            .id
 
-        Log.i("dart","sleepTimeId: ${sleepTimeId}")
-
-        val heartRateDao = db
+        val heartRateList = db
             .heartRateDao()
-            .getLastSleepHeartRate(sleepTimeId)
+            .getLastSleepHeartRate(lastSleepTime.id)
             .toList()
-
-        Log.i("dart","heartRateDao: ${heartRateDao.count()}")
 
         val heartRateStats = HeartRateStats()
 
-        val bpmStats = heartRateStats.CalculateHourlyAverageBpm(heartRateDao)
-        val ibiStats = heartRateStats.CalculateHourlyAverageIbi(heartRateDao)
+        val bpmHourlyStats = heartRateStats
+            .calculateHourlyAverageBpm(heartRateList)
+
+        val ibiHourlyStats = heartRateStats
+            .calculateHourlyAverageIbi(heartRateList)
 
         val aaChartView = findViewById<AAChartView>(R.id.aa_chart_view)
         val aaChartModel : AAChartModel = AAChartModel()
             .chartType(AAChartType.Area)
-            .title("Pomiar tętna spoczynkowego")
+            .title("Średnie tętno spoczynkowe")
             .dataLabelsEnabled(true)
             .series(arrayOf(
                 AASeriesElement()
                     .name("BPM")
-                    .data(bpmStats.map{it}.toTypedArray()),
+                    .data(bpmHourlyStats.map{it}.toTypedArray()),
                 AASeriesElement()
                     .name("IBI")
-                    .data(ibiStats.map{it}.toTypedArray())
+                    .data(ibiHourlyStats.map{it}.toTypedArray())
             ))
 
         aaChartView.aa_drawChartWithChartModel(aaChartModel)
+
+        val avgBpm = heartRateStats
+            .calculateAverage(bpmHourlyStats)
+
+        textViewAvgBpm.setText("${avgBpm}")
+
+        val maxBpm = heartRateStats
+            .getMax(bpmHourlyStats)
+
+        textViewMaxBpm.setText("${maxBpm}")
+
+        val minBpm = heartRateStats
+            .getMin(bpmHourlyStats)
+
+        textViewMinBpm.setText("${minBpm}")
+
+        val avgIbi = heartRateStats
+            .calculateAverage(ibiHourlyStats)
+
+        textViewAvgIbi.setText("${avgIbi}")
+
+        val maxIbi = heartRateStats
+            .getMax(ibiHourlyStats)
+
+        textViewMaxIbi.setText("${maxIbi}")
+
+        val minIbi = heartRateStats
+            .getMin(ibiHourlyStats)
+
+        textViewMinIbi.setText("${minIbi}")
+
+        val sleepTime = heartRateStats.CalculateSleepTime(lastSleepTime)
+
+        textViewSleepTime.setText(sleepTime)
     }
 }
