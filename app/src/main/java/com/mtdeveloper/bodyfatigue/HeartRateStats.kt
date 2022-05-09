@@ -3,8 +3,8 @@ package com.mtdeveloper.bodyfatigue
 import android.util.Log
 import com.mtdeveloper.bodyfatigue.database.model.HeartRate
 import com.mtdeveloper.bodyfatigue.database.model.SleepTime
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
 import kotlin.math.roundToInt
 
 class HeartRateStats {
@@ -83,11 +83,37 @@ class HeartRateStats {
         val startSleep = sleepTime.startSleep
         val stopSleep = sleepTime.stopSleep
 
-        val minSleep = startSleep.until(stopSleep, ChronoUnit.MINUTES)
+        val minutesSleep = startSleep.until(stopSleep, ChronoUnit.MINUTES)
 
-        val hour = minSleep / 60
-        val min = minSleep % 60
+        val hour = minutesSleep / 60
+        val min = minutesSleep % 60
 
         return String.format("%d g %02d min", hour, min)
+    }
+
+    fun calculateSleepTimeRelativePreviousNights(sleepTimeList: List<SleepTime>) : Long {
+        val lastSleepTime = sleepTimeList
+            .last()
+
+        val minutesLastSleepTime = lastSleepTime.startSleep.until(lastSleepTime.stopSleep, ChronoUnit.MINUTES)
+
+        var allSleepTimeMinutes : Long = 0
+        var count = 0
+
+        sleepTimeList.forEach {
+            if(it.id == lastSleepTime.id){
+                return@forEach
+            }
+
+            val minutesSleep = it.startSleep.until(it.stopSleep, ChronoUnit.MINUTES)
+            allSleepTimeMinutes += minutesSleep
+            count++
+        }
+
+        val avgSleepTime = allSleepTimeMinutes / count
+
+        val result = minutesLastSleepTime - avgSleepTime
+
+        return result
     }
 }

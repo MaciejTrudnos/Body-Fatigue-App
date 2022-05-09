@@ -15,7 +15,7 @@ interface SleepTimeDao {
     @Query("UPDATE SleepTime SET stopSleep = :stopSleep WHERE Id = :id")
     fun updateSleepTime(id: Int, stopSleep: LocalDateTime)
 
-    @Query("SELECT * FROM SleepTime")
+    @Query("SELECT Id, StartSleep, StopSleep FROM SleepTime")
     fun getAll(): List<SleepTime>
 
     @Query("SELECT Id, StartSleep, StopSleep FROM SleepTime ORDER BY Id DESC LIMIT 1")

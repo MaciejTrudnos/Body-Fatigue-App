@@ -29,6 +29,11 @@ class RestHeartActivity : AppCompatActivity() {
             .getLastSleepHeartRate(lastSleepTime.id)
             .toList()
 
+        val allSleepTime = db
+            .sleepTimeDao()
+            .getAll()
+            .toList()
+
         val heartRateStats = HeartRateStats()
 
         val bpmHourlyStats = heartRateStats
@@ -86,5 +91,25 @@ class RestHeartActivity : AppCompatActivity() {
         val sleepTime = heartRateStats.CalculateSleepTime(lastSleepTime)
 
         textViewSleepTime.setText(sleepTime)
+
+        val diffTime = heartRateStats.calculateSleepTimeRelativePreviousNights(allSleepTime)
+        var relativePreviousNightsText = GetRelativePreviousNightsText(diffTime)
+
+        textViewRelativeSleepTime.setText(relativePreviousNightsText)
+    }
+
+    private fun GetRelativePreviousNightsText(diffTime : Long) : String {
+        if (diffTime > 0){
+            val hour = diffTime / 60
+            val min = diffTime % 60
+
+            return "dłuższy o " + String.format("%d g %02d min", hour, min)
+
+        }else{
+            val hour = Math.abs(diffTime) / 60
+            val min = Math.abs(diffTime) % 60
+
+            return "krótszy o " + String.format("%d g %02d min", hour, min)
+        }
     }
 }
