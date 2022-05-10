@@ -1,5 +1,6 @@
 package com.mtdeveloper.bodyfatigue
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.room.Room
@@ -14,6 +15,9 @@ class RestHeartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rest_heart)
+
+        val actionBar = supportActionBar
+        actionBar!!.title = "Analiza tętna spoczynkowego"
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -31,6 +35,11 @@ class RestHeartActivity : AppCompatActivity() {
 
         val allSleepTime = db
             .sleepTimeDao()
+            .getAll()
+            .toList()
+
+        val allHeartRate = db
+            .heartRateDao()
             .getAll()
             .toList()
 
@@ -89,17 +98,45 @@ class RestHeartActivity : AppCompatActivity() {
         textViewMinIbi.setText("${minIbi}")
 
         val sleepTime = heartRateStats.CalculateSleepTime(lastSleepTime)
-
-        textViewSleepTime.setText(sleepTime)
+        val sleepTimeText = prepareSleepTimeText(sleepTime)
+        textViewSleepTime.setText(sleepTimeText)
 
         val diffTime = heartRateStats.calculateSleepTimeRelativePreviousNights(allSleepTime)
-        var relativePreviousNightsText = GetRelativePreviousNightsText(diffTime)
+        val relativePreviousNightsText = prepareRelativePreviousNightsText(diffTime)
 
         textViewRelativeSleepTime.setText(relativePreviousNightsText)
+
+        val bpmRelativePreviousNights = heartRateStats.calculateBpmRelativePreviousNights(allHeartRate, avgBpm, lastSleepTime.id)
+        val bpmRelativePreviousNightsText = prepareBpmRelativePreviousNightsText(bpmRelativePreviousNights)
+
+        textViewRelativeBpm.setText(bpmRelativePreviousNightsText)
+
+        val ibiRelativePreviousNights = heartRateStats.calculateIbiRelativePreviousNights(allHeartRate, avgIbi, lastSleepTime.id)
+        val ibiRelativePreviousNightsText = prepareIbiRelativePreviousNightsText(ibiRelativePreviousNights)
+
+        textViewRelativeIbi.setText(ibiRelativePreviousNightsText)
+
+        buttonRestHeartRating.setOnClickListener {
+            val restHeartRatingIntent = Intent(this, RestHeartRatingActivity::class.java)
+            restHeartRatingIntent.putExtra("CurrentBPM", 0)
+            restHeartRatingIntent.putExtra("CurrentIBI", 0)
+            restHeartRatingIntent.putExtra("AverageBPM", avgBpm)
+            restHeartRatingIntent.putExtra("AverageIBI", avgIbi)
+            restHeartRatingIntent.putExtra("SleepTime", sleepTime)
+            restHeartRatingIntent.putExtra("SleepTimeId", lastSleepTime.id)
+            startActivity(restHeartRatingIntent)
+        }
     }
 
-    private fun GetRelativePreviousNightsText(diffTime : Long) : String {
-        if (diffTime > 0){
+    private fun prepareSleepTimeText(minutesSleep : Long) : String {
+        val hour = minutesSleep / 60
+        val min = minutesSleep % 60
+
+        return String.format("%d g %02d min", hour, min)
+    }
+
+    private fun prepareRelativePreviousNightsText(diffTime : Long) : String {
+        if (diffTime > 0) {
             val hour = diffTime / 60
             val min = diffTime % 60
 
@@ -110,6 +147,24 @@ class RestHeartActivity : AppCompatActivity() {
             val min = Math.abs(diffTime) % 60
 
             return "krótszy o " + String.format("%d g %02d min", hour, min)
+        }
+    }
+
+    private fun prepareBpmRelativePreviousNightsText(bpm : Int) : String {
+        if (bpm > 0) {
+            return "wyższe o ${bpm} bpm"
+
+        } else {
+            return "niższe o ${Math.abs(bpm)} bpm"
+        }
+    }
+
+    private fun prepareIbiRelativePreviousNightsText(ibi : Int) : String {
+        if (ibi > 0) {
+            return "wyższe o ${ibi} ms"
+
+        } else {
+            return "niższe o ${Math.abs(ibi)} ms"
         }
     }
 }

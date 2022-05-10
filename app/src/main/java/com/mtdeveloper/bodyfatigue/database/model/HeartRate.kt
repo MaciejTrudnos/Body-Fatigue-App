@@ -17,10 +17,9 @@ data class HeartRate(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "Id") val id: Int = 0,
     @ColumnInfo(name = "BPM") val bpm: Int,
     @ColumnInfo(name = "IBI") val ibi: Int,
-    @ColumnInfo(name = "Type") val type: Type,
     @ColumnInfo(name = "CreateDate") val createDate: LocalDateTime,
     @ColumnInfo(name = "SleepTimeId") val sleepTimeId: Int
 ){
-    constructor(bpm: Int, ibi: Int, type: Type, createDate: LocalDateTime, sleepTimeId: Int)
-            : this(0, bpm, ibi, type, createDate, sleepTimeId)
+    constructor(bpm: Int, ibi: Int, createDate: LocalDateTime, sleepTimeId: Int)
+            : this(0, bpm, ibi, createDate, sleepTimeId)
 }

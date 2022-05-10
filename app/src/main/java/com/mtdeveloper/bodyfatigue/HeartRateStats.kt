@@ -3,7 +3,6 @@ package com.mtdeveloper.bodyfatigue
 import android.util.Log
 import com.mtdeveloper.bodyfatigue.database.model.HeartRate
 import com.mtdeveloper.bodyfatigue.database.model.SleepTime
-import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
@@ -16,10 +15,10 @@ class HeartRateStats {
         var heartBeatCount = 0
 
         heartRate.forEach {
-            if(lastHour == it.createDate.hour){
+            if (lastHour == it.createDate.hour){
                 heartBeat += it.bpm
                 heartBeatCount++
-            }else {
+            } else {
                 val avgBpm = heartBeat / heartBeatCount
 
                 bpmStats.add(avgBpm)
@@ -40,10 +39,10 @@ class HeartRateStats {
         var heartBeatCount = 0
 
         heartRate.forEach {
-            if(lastHour == it.createDate.hour){
+            if (lastHour == it.createDate.hour) {
                 heartBeat += it.ibi
                 heartBeatCount++
-            }else {
+            } else {
                 val avgBpm = heartBeat / heartBeatCount
 
                 ibiStats.add(avgBpm)
@@ -79,16 +78,13 @@ class HeartRateStats {
         return min;
     }
 
-    fun CalculateSleepTime(sleepTime : SleepTime) : String {
+    fun CalculateSleepTime(sleepTime : SleepTime) : Long {
         val startSleep = sleepTime.startSleep
         val stopSleep = sleepTime.stopSleep
 
         val minutesSleep = startSleep.until(stopSleep, ChronoUnit.MINUTES)
 
-        val hour = minutesSleep / 60
-        val min = minutesSleep % 60
-
-        return String.format("%d g %02d min", hour, min)
+        return minutesSleep
     }
 
     fun calculateSleepTimeRelativePreviousNights(sleepTimeList: List<SleepTime>) : Long {
@@ -101,7 +97,7 @@ class HeartRateStats {
         var count = 0
 
         sleepTimeList.forEach {
-            if(it.id == lastSleepTime.id){
+            if (it.id == lastSleepTime.id) {
                 return@forEach
             }
 
@@ -113,6 +109,30 @@ class HeartRateStats {
         val avgSleepTime = allSleepTimeMinutes / count
 
         val result = minutesLastSleepTime - avgSleepTime
+
+        return result
+    }
+
+    fun calculateBpmRelativePreviousNights(heartRateList: List<HeartRate>, lastNightAvgBpm : Int, lastSleepTimeId : Int) : Int {
+        val avgBpm = heartRateList
+            .filter{x -> x.sleepTimeId != lastSleepTimeId}
+            .map{it.bpm}
+            .average()
+            .roundToInt()
+
+        val result = lastNightAvgBpm - avgBpm
+
+        return result
+    }
+
+    fun calculateIbiRelativePreviousNights(heartRateList: List<HeartRate>, lastNightIbiBpm : Int, lastSleepTimeId : Int) : Int {
+        val avgIbi = heartRateList
+            .filter{x -> x.sleepTimeId != lastSleepTimeId}
+            .map{it.ibi}
+            .average()
+            .roundToInt()
+
+        val result = lastNightIbiBpm - avgIbi
 
         return result
     }

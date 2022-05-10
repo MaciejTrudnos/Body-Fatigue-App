@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
             Log.i("date", "${dateTime}")
 
-            var hr = HeartRate(bpmRnds, ibiRnds, typeMode, dateTime, stId.toInt())
+            var hr = HeartRate(bpmRnds, ibiRnds, dateTime, stId.toInt())
             heartRateDao.insert(hr)
 
             Thread.sleep(100)
@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
             var current2 = "2022-04-28 ${startHour}:20:28"
             val dateTime2 = LocalDateTime.parse(current2, formatter)
 
-            var hr2 = HeartRate(bpmRnds2, ibiRnds2, typeMode, dateTime2, stId.toInt())
+            var hr2 = HeartRate(bpmRnds2, ibiRnds2, dateTime2, stId.toInt())
             heartRateDao.insert(hr2)
 
             Thread.sleep(100)
@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity() {
             var current3 = "2022-04-28 ${startHour}:40:58"
             val dateTime3 = LocalDateTime.parse(current3, formatter)
 
-            var hr3 = HeartRate(bpmRnds3, ibiRnds3, typeMode, dateTime3, stId.toInt())
+            var hr3 = HeartRate(bpmRnds3, ibiRnds3, dateTime3, stId.toInt())
             heartRateDao.insert(hr3)
 
             startHour++

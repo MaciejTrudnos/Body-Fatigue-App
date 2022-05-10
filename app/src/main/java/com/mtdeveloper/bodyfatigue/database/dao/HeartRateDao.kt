@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 
 @Dao
 interface HeartRateDao {
-    @Query("SELECT Id, BPM, IBI, Type, CreateDate, SleepTimeId FROM HeartRate")
+    @Query("SELECT Id, BPM, IBI, CreateDate, SleepTimeId FROM HeartRate")
     fun getAll(): List<HeartRate>
 
     @Insert
@@ -19,6 +19,6 @@ interface HeartRateDao {
     @Delete
     fun delete(heartRate: HeartRate)
 
-    @Query("SELECT Id, BPM, IBI, Type, CreateDate, SleepTimeId FROM HeartRate hr WHERE SleepTimeId = :sleepTimeId")
+    @Query("SELECT Id, BPM, IBI, CreateDate, SleepTimeId FROM HeartRate hr WHERE SleepTimeId = :sleepTimeId")
     fun getLastSleepHeartRate(sleepTimeId : Int): List<HeartRate>
 }
