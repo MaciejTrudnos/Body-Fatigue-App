@@ -1,10 +1,18 @@
 package com.mtdeveloper.bodyfatigue.database.model
 
 import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.mtdeveloper.bodyfatigue.database.Type
 import java.time.LocalDateTime
 
+@Entity(tableName = "RestHeartRating", foreignKeys = [ForeignKey(
+    entity = SleepTime::class,
+    parentColumns = ["Id"],
+    childColumns = ["SleepTimeId"],
+    onDelete = ForeignKey.NO_ACTION
+)])
 data class RestHeartRating(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "Id") val id: Int = 0,
     @ColumnInfo(name = "CurrentBPM") val currentBpm: Int,

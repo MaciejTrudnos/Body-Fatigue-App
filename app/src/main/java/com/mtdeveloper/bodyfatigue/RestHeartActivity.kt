@@ -3,6 +3,8 @@ package com.mtdeveloper.bodyfatigue
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
+import android.widget.Toast
 import androidx.room.Room
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
@@ -117,6 +119,16 @@ class RestHeartActivity : AppCompatActivity() {
         textViewRelativeIbi.setText(ibiRelativePreviousNightsText)
 
         buttonRestHeartRating.setOnClickListener {
+            val restHeartRatingDao = db.restHeartRatingDao()
+            val isRatingExists = restHeartRatingDao.isRatingExists(lastSleepTime.id)
+
+            if (isRatingExists) {
+                Toast.makeText(this, "Ocena została już dodana", Toast.LENGTH_SHORT)
+                    .show()
+
+                return@setOnClickListener
+            }
+
             val restHeartRatingIntent = Intent(this, RestHeartRatingActivity::class.java)
             restHeartRatingIntent.putExtra("CurrentBPM", 0)
             restHeartRatingIntent.putExtra("CurrentIBI", 0)

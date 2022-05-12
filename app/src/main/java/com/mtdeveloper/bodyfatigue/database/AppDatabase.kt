@@ -7,9 +7,10 @@ import com.mtdeveloper.bodyfatigue.database.Converters
 import com.mtdeveloper.bodyfatigue.database.dao.*
 import com.mtdeveloper.bodyfatigue.database.model.*
 
-@Database(entities = [HeartRate::class, SleepTime::class], version = 1)
+@Database(entities = [HeartRate::class, SleepTime::class, RestHeartRating::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun heartRateDao(): HeartRateDao
     abstract fun sleepTimeDao(): SleepTimeDao
+    abstract fun restHeartRatingDao(): RestHeartRatingDao
 }
