@@ -15,8 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BodyFatigue">
         <activity
+            android:name=".RestHeartRatingStatsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".RestHeartRatingActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".RestHeartActivity"
             android:exported="false"

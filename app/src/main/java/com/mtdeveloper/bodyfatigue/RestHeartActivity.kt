@@ -138,6 +138,11 @@ class RestHeartActivity : AppCompatActivity() {
             restHeartRatingIntent.putExtra("SleepTimeId", lastSleepTime.id)
             startActivity(restHeartRatingIntent)
         }
+
+        buttonRestHeartRatingStats.setOnClickListener {
+            val restHeartRatingStatsIntent = Intent(this, RestHeartRatingStatsActivity::class.java)
+            startActivity(restHeartRatingStatsIntent)
+        }
     }
 
     private fun prepareSleepTimeText(minutesSleep : Long) : String {

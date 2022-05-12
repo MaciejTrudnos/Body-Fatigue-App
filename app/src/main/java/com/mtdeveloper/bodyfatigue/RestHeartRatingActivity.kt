@@ -76,13 +76,7 @@ class RestHeartRatingActivity : AppCompatActivity() {
             val command = RestHeartRating(currentBpm, currentIBI, averageBPM, averageIBI, sleepTime.toInt(), sleepTimeId, localDateTimeNow, np.value )
 
             restHeartRatingDao.insert(command)
-
-            val asd = restHeartRatingDao.getAll().toList()
-            asd.forEach {
-                Log.i("Ocena"," ${it.currentBpm}, ${it.currentIbi}, ${averageBPM}, ${averageIBI}, ${it.sleepTime}, ${it.sleepTimeId}, ${it.createDate}, ${it.rating}")
-            }
         }
-
     }
 
     private fun prepareSleepTimeText(minutesSleep : Long) : String {
