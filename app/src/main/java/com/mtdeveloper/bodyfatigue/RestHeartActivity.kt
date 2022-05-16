@@ -3,7 +3,6 @@ package com.mtdeveloper.bodyfatigue
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
 import android.widget.Toast
 import androidx.room.Room
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
@@ -100,7 +99,7 @@ class RestHeartActivity : AppCompatActivity() {
         textViewMinIbi.setText("${minIbi}")
 
         val sleepTime = heartRateStats.CalculateSleepTime(lastSleepTime)
-        val sleepTimeText = prepareSleepTimeText(sleepTime)
+        val sleepTimeText = heartRateStats.changeMinutesToTextTime(sleepTime)
         textViewSleepTime.setText(sleepTimeText)
 
         val diffTime = heartRateStats.calculateSleepTimeRelativePreviousNights(allSleepTime)
@@ -143,13 +142,6 @@ class RestHeartActivity : AppCompatActivity() {
             val restHeartRatingStatsIntent = Intent(this, RestHeartRatingStatsActivity::class.java)
             startActivity(restHeartRatingStatsIntent)
         }
-    }
-
-    private fun prepareSleepTimeText(minutesSleep : Long) : String {
-        val hour = minutesSleep / 60
-        val min = minutesSleep % 60
-
-        return String.format("%d g %02d min", hour, min)
     }
 
     private fun prepareRelativePreviousNightsText(diffTime : Long) : String {

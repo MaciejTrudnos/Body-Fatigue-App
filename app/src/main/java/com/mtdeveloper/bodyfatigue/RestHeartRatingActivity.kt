@@ -1,8 +1,6 @@
 package com.mtdeveloper.bodyfatigue
 
 import android.os.Bundle
-import android.util.Log
-import android.view.Gravity
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
@@ -58,7 +56,8 @@ class RestHeartRatingActivity : AppCompatActivity() {
         textViewCurrentIbi.setText("${currentIBI}")
         textViewAvgIbi.setText("${averageIBI}")
 
-        val sleepTimeText = prepareSleepTimeText(sleepTime)
+        val heartRateStats = HeartRateStats()
+        val sleepTimeText = heartRateStats.changeMinutesToTextTime(sleepTime)
 
         textViewSleepTime.setText(sleepTimeText)
 
@@ -76,13 +75,11 @@ class RestHeartRatingActivity : AppCompatActivity() {
             val command = RestHeartRating(currentBpm, currentIBI, averageBPM, averageIBI, sleepTime.toInt(), sleepTimeId, localDateTimeNow, np.value )
 
             restHeartRatingDao.insert(command)
+
+            Toast.makeText(this, "Dodano ocenę", Toast.LENGTH_SHORT)
+                .show()
+
+            buttonSaveRestHeartRating.setEnabled(false)
         }
-    }
-
-    private fun prepareSleepTimeText(minutesSleep : Long) : String {
-        val hour = minutesSleep / 60
-        val min = minutesSleep % 60
-
-        return String.format("%d g %02d min", hour, min)
     }
 }

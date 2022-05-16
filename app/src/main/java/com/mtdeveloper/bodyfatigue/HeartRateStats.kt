@@ -136,4 +136,11 @@ class HeartRateStats {
 
         return result
     }
+
+    fun changeMinutesToTextTime(minutesSleep : Long) : String {
+        val hour = minutesSleep / 60
+        val min = minutesSleep % 60
+
+        return String.format("%d g %02d min", hour, min)
+    }
 }
