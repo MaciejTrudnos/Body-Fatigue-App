@@ -19,7 +19,7 @@ class RestHeartRatingStatsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_rest_heart_rating_stats)
 
         val actionBar = supportActionBar
-        actionBar!!.title = "Oceny zmęczenia"
+        actionBar!!.title = "Wyniki pomiarów"
         actionBar!!.subtitle = "tętna spoczynkowego"
 
         val db = Room.databaseBuilder(

@@ -22,7 +22,7 @@ class RestHeartRatingActivity : AppCompatActivity() {
 
         val np = numberPicker
         np.minValue = 1
-        np.maxValue = 10
+        np.maxValue = 4
 
         val db = Room.databaseBuilder(
             applicationContext,

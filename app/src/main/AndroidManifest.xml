@@ -15,9 +15,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BodyFatigue">
         <activity
+            android:name=".OrthostaticTestRatingStatsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrthostaticTestRatingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrthostaticTestActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".RestHeartRatingStatsActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".RestHeartRatingActivity"
             android:exported="false"

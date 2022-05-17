@@ -63,6 +63,11 @@ class MainActivity : AppCompatActivity() {
 //
 //        }
 
+        buttonOrthostaticTest.setOnClickListener {
+            val orthostaticTestIntent = Intent(this, OrthostaticTestActivity::class.java)
+            startActivity(orthostaticTestIntent)
+        }
+
         buttonRestHeart.setOnClickListener {
             val restHeartIntent = Intent(this, RestHeartActivity::class.java)
             startActivity(restHeartIntent)
