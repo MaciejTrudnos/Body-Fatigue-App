@@ -1,6 +1,5 @@
 package com.mtdeveloper.bodyfatigue
 
-import android.util.Log
 import com.mtdeveloper.bodyfatigue.database.model.HeartRate
 import com.mtdeveloper.bodyfatigue.database.model.SleepTime
 import java.time.temporal.ChronoUnit
@@ -56,26 +55,26 @@ class HeartRateStats {
         return ibiStats
     }
 
-    fun calculateAverage(heartRateStats: List<Int>) : Int {
-        val avgBpm = heartRateStats
+    fun calculateAverage(data: List<Int>) : Int {
+        val result = data
             .average()
             .roundToInt()
 
-        return avgBpm
+        return result
     }
 
-    fun getMax(heartRateStats: List<Int>) : Int {
-        val max = heartRateStats
+    fun getMax(data: List<Int>) : Int {
+        val result = data
             .maxOrNull() ?: 0
 
-        return max;
+        return result;
     }
 
-    fun getMin(heartRateStats: List<Int>) : Int {
-        val min = heartRateStats
+    fun getMin(data: List<Int>) : Int {
+        val result = data
             .minOrNull() ?: 0
 
-        return min;
+        return result;
     }
 
     fun CalculateSleepTime(sleepTime : SleepTime) : Long {

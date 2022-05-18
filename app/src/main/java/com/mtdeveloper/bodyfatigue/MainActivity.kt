@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
-import com.mtdeveloper.bodyfatigue.database.Type
+
 import com.mtdeveloper.bodyfatigue.database.dao.HeartRateDao
 import com.mtdeveloper.bodyfatigue.database.dao.SleepTimeDao
 import com.mtdeveloper.bodyfatigue.database.model.HeartRate
@@ -18,8 +18,6 @@ import java.time.format.DateTimeFormatter
 
 
 class MainActivity : AppCompatActivity() {
-
-    private var typeMode : Type = Type.Normal
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,10 +73,10 @@ class MainActivity : AppCompatActivity() {
 
         switchSleepMode.setOnClickListener {
             if (switchSleepMode.isChecked) {
-                typeMode = Type.Sleep
+
                 Toast.makeText(this, "Sleep mode", Toast.LENGTH_SHORT).show()
             } else {
-                typeMode = Type.Normal
+
                 Toast.makeText(this, "Normal mode", Toast.LENGTH_SHORT).show()
             }
         }

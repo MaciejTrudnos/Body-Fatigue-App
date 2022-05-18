@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.mtdeveloper.bodyfatigue.database.Type
 import java.time.LocalDateTime
 
 @Entity(tableName = "RestHeartRating", foreignKeys = [ForeignKey(

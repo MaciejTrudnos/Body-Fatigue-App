@@ -5,10 +5,10 @@ import java.time.LocalDateTime
 
 class Converters {
     @TypeConverter
-    fun toType(value: String) = enumValueOf<Type>(value)
+    fun toType(value: String) = enumValueOf<PositionTest>(value)
 
     @TypeConverter
-    fun fromType(value: Type) = value.name
+    fun fromType(value: PositionTest) = value.name
 
     @TypeConverter
     fun toDate(dateString: String): LocalDateTime {

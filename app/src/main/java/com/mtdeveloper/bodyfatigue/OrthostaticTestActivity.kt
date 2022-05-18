@@ -5,17 +5,20 @@ import android.media.AudioManager
 import android.media.ToneGenerator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.room.Room
+import com.mtdeveloper.bodyfatigue.database.AppDatabase
+import com.mtdeveloper.bodyfatigue.database.PositionTest
+import com.mtdeveloper.bodyfatigue.database.dao.OrthostaticTestDao
+import com.mtdeveloper.bodyfatigue.database.model.OrthostaticTest
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_orthostatic_test.*
 import kotlinx.android.synthetic.main.activity_rest_heart_rating.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import java.util.*
 
 class OrthostaticTestActivity : AppCompatActivity() {
 
-    private val bpmStats : MutableList<Int> = ArrayList()
+    private var position : PositionTest = PositionTest.Lying
     private var bpm: Int = 0
     private var ibi: Int = 0
 
@@ -26,6 +29,13 @@ class OrthostaticTestActivity : AppCompatActivity() {
         val actionBar = supportActionBar
         actionBar!!.title = "Test ortostatyczny"
 
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "AppDatabase"
+        ).allowMainThreadQueries().build()
+
+        val orthostaticTestDao = db.orthostaticTestDao()
+
         Thread(
             {
                 mock()
@@ -35,7 +45,7 @@ class OrthostaticTestActivity : AppCompatActivity() {
         buttonStart.setOnClickListener {
             Thread(
                 {
-                    runTest()
+                    runTest(orthostaticTestDao)
                 }
             ).start()
         }
@@ -70,7 +80,11 @@ class OrthostaticTestActivity : AppCompatActivity() {
         }
     }
 
-    private fun runTest(){
+    private fun runTest(orthostaticTestDao: OrthostaticTestDao) {
+
+        val localDateTime = LocalDateTime
+            .now()
+
         val toneG = ToneGenerator(AudioManager.STREAM_ALARM, 100)
 
         runOnUiThread {
@@ -78,18 +92,22 @@ class OrthostaticTestActivity : AppCompatActivity() {
             buttonTestResults.setEnabled(false)
         }
 
-        startCountDown()
+        position = PositionTest.Lying
+
+        startCountDown(orthostaticTestDao, localDateTime)
 
         runOnUiThread {
             textViewCountDownTimer.setText("")
             textViewInfo.setText("Wstań")
         }
 
+        position = PositionTest.Standing
+
         toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 1000)
 
         Thread.sleep(5000)
 
-        startCountDown()
+        startCountDown(orthostaticTestDao, localDateTime)
 
         runOnUiThread {
             textViewCountDownTimer.setText("")
@@ -104,11 +122,12 @@ class OrthostaticTestActivity : AppCompatActivity() {
         }
 
         val orthostaticTestRatingIntent = Intent(this, OrthostaticTestRatingActivity::class.java)
+        orthostaticTestRatingIntent.putExtra("CreateDate", localDateTime.toString())
         startActivity(orthostaticTestRatingIntent)
     }
 
-    fun startCountDown() {
-        var counter = 60
+    fun startCountDown(orthostaticTestDao: OrthostaticTestDao, localDateTime: LocalDateTime) {
+        var counter = 5
 
         runOnUiThread {
             textViewInfo.setText("Nie poruszaj się przez kolejne:")
@@ -116,11 +135,13 @@ class OrthostaticTestActivity : AppCompatActivity() {
 
         while (counter >= 0) {
 
-            bpmStats.add(bpm)
-
             runOnUiThread {
                 textViewCountDownTimer.setText("$counter sekund")
             }
+
+            val data = OrthostaticTest(bpm, ibi, position, localDateTime )
+
+            orthostaticTestDao.insert(data)
 
             Thread.sleep(1000)
 
