@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
+import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
+import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
+import com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
+import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
 import com.mtdeveloper.bodyfatigue.database.model.RestHeartRating
 import kotlinx.android.synthetic.main.activity_rest_heart_rating.*
 import java.time.LocalDateTime
-
 
 class RestHeartRatingActivity : AppCompatActivity() {
 
@@ -20,7 +23,7 @@ class RestHeartRatingActivity : AppCompatActivity() {
         actionBar!!.title = "Ocena zmęczenia"
         actionBar!!.subtitle = "tętna spoczynkowego"
 
-        val np = numberPicker
+        val np = numberPickerRH
         np.minValue = 1
         np.maxValue = 4
         np.displayedValues = arrayOf("Wypoczęty","Przeciętnie wypoczęty","Duże zmęczenie","Przemęczenie")
@@ -30,57 +33,82 @@ class RestHeartRatingActivity : AppCompatActivity() {
             AppDatabase::class.java, "AppDatabase"
         ).allowMainThreadQueries().build()
 
+        val heartRateDao = db.heartRateDao()
         val restHeartRatingDao = db.restHeartRatingDao()
 
         val receivedRestHeartRatingIntent = getIntent()
 
-        val currentBpm = receivedRestHeartRatingIntent
-            .getIntExtra("CurrentBPM", 0)
+        val receivedCreateDate = receivedRestHeartRatingIntent
+            .getStringExtra("CreateDate")
 
-        val currentIBI = receivedRestHeartRatingIntent
-            .getIntExtra("CurrentIBI", 0)
+        val createDate = LocalDateTime.parse(receivedCreateDate)
 
-        val averageBPM = receivedRestHeartRatingIntent
-            .getIntExtra("AverageBPM", 0)
+        val heartRateResults = heartRateDao
+            .getByCreateDate(createDate)
+            .toList()
 
-        val averageIBI = receivedRestHeartRatingIntent
-            .getIntExtra("AverageIBI", 0)
+        val aaChartView = findViewById<AAChartView>(R.id.aa_chart_view)
+        val aaChartModel : AAChartModel = AAChartModel()
+            .chartType(AAChartType.Area)
+            .title("Wyniki tętna spoczynkowego")
+            .dataLabelsEnabled(true)
+            .series(arrayOf(
+                AASeriesElement()
+                    .name("BPM")
+                    .data(heartRateResults.map{it.bpm}.toTypedArray()),
+                AASeriesElement()
+                    .name("IBI")
+                    .data(heartRateResults.map{it.ibi}.toTypedArray())
+            ))
 
-        val sleepTime = receivedRestHeartRatingIntent
-            .getLongExtra("SleepTime", 0)
-
-        val sleepTimeId = receivedRestHeartRatingIntent
-            .getIntExtra("SleepTimeId", 0)
-
-        textViewCurrentBpm.setText("${currentBpm}")
-        textViewAvgBpm.setText("${averageBPM}")
-        textViewCurrentIbi.setText("${currentIBI}")
-        textViewAvgIbi.setText("${averageIBI}")
+        aaChartView.aa_drawChartWithChartModel(aaChartModel)
 
         val heartRateStats = HeartRateStats()
-        val sleepTimeText = heartRateStats.changeMinutesToTextTime(sleepTime)
 
-        textViewSleepTime.setText(sleepTimeText)
+        val bpm = heartRateResults
+            .map{it.bpm}
+            .toList()
 
-        buttonSaveRestHeartRating.setOnClickListener {
-            val isRatingExists = restHeartRatingDao.isRatingExists(sleepTimeId)
+        val averageBPM = heartRateStats
+            .calculateAverage(bpm)
 
-            if (isRatingExists) {
-                Toast.makeText(this, "Ocena została już dodana", Toast.LENGTH_SHORT)
-                    .show()
+        val maxBPM = heartRateStats
+            .getMax(bpm)
 
-                return@setOnClickListener
-            }
+        val minBPM = heartRateStats
+            .getMin(bpm)
 
-            val localDateTimeNow = LocalDateTime.now()
-            val command = RestHeartRating(currentBpm, currentIBI, averageBPM, averageIBI, sleepTime.toInt(), sleepTimeId, localDateTimeNow, np.value )
+        val ibi = heartRateResults
+            .map{it.ibi}
+            .toList()
+
+        val averageIBI = heartRateStats
+            .calculateAverage(ibi)
+
+        val maxIBI = heartRateStats
+            .getMax(ibi)
+
+        val minIBI = heartRateStats
+            .getMin(ibi)
+
+        textViewAvgBpm.setText("${averageBPM}")
+        textViewMaxBpm.setText("${maxBPM}")
+        textViewMinBpm.setText("${minBPM}")
+        textViewAvgIbi.setText("${averageIBI}")
+        textViewMaxIbi.setText("${maxIBI}")
+        textViewMinIbi.setText("${minIBI}")
+
+        buttonRestHeartRatingStats.setOnClickListener {
+            val createDate = LocalDateTime.now()
+
+            val command = RestHeartRating(averageBPM, maxBPM, minBPM, averageIBI, maxIBI, minIBI, createDate, np.value )
 
             restHeartRatingDao.insert(command)
 
             Toast.makeText(this, "Dodano ocenę", Toast.LENGTH_SHORT)
                 .show()
 
-            buttonSaveRestHeartRating.setEnabled(false)
+            buttonRestHeartRatingStats.setEnabled(false)
         }
     }
 }

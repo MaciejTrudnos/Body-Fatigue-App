@@ -5,12 +5,11 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.mtdeveloper.bodyfatigue.database.model.HeartRate
-import com.mtdeveloper.bodyfatigue.database.model.SleepTime
 import java.time.LocalDateTime
 
 @Dao
 interface HeartRateDao {
-    @Query("SELECT Id, BPM, IBI, CreateDate, SleepTimeId FROM HeartRate")
+    @Query("SELECT Id, BPM, IBI, CreateDate FROM HeartRate")
     fun getAll(): List<HeartRate>
 
     @Insert
@@ -19,6 +18,6 @@ interface HeartRateDao {
     @Delete
     fun delete(heartRate: HeartRate)
 
-    @Query("SELECT Id, BPM, IBI, CreateDate, SleepTimeId FROM HeartRate hr WHERE SleepTimeId = :sleepTimeId")
-    fun getLastSleepHeartRate(sleepTimeId : Int): List<HeartRate>
+    @Query("SELECT Id, BPM, IBI, CreateDate FROM HeartRate WHERE CreateDate = :createDate")
+    fun getByCreateDate(createDate: LocalDateTime): List<HeartRate>
 }

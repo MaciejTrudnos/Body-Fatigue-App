@@ -2,27 +2,21 @@ package com.mtdeveloper.bodyfatigue.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 
-@Entity(tableName = "RestHeartRating", foreignKeys = [ForeignKey(
-    entity = SleepTime::class,
-    parentColumns = ["Id"],
-    childColumns = ["SleepTimeId"],
-    onDelete = ForeignKey.NO_ACTION
-)])
+@Entity
 data class RestHeartRating(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "Id") val id: Int = 0,
-    @ColumnInfo(name = "CurrentBPM") val currentBpm: Int,
-    @ColumnInfo(name = "CurrentIBI") val currentIbi: Int,
     @ColumnInfo(name = "AverageBPM") val averageBpm: Int,
+    @ColumnInfo(name = "MaxBPM") val maxBpm: Int,
+    @ColumnInfo(name = "MinBPM") val minBpm: Int,
     @ColumnInfo(name = "AverageIBI") val averageIbi: Int,
-    @ColumnInfo(name = "SleepTime") val sleepTime: Int,
-    @ColumnInfo(name = "SleepTimeId") val sleepTimeId: Int,
+    @ColumnInfo(name = "MaxIBI") val maxIbi: Int,
+    @ColumnInfo(name = "MinIBI") val minIbi: Int,
     @ColumnInfo(name = "CreateDate") val createDate: LocalDateTime,
     @ColumnInfo(name = "Rating") val rating: Int
 ){
-    constructor(currentBpm: Int, currentIbi: Int, averageBpm: Int, averageIbi: Int, sleepTime: Int, sleepTimeId: Int, createDate: LocalDateTime, rating: Int)
-            : this(0, currentBpm, currentIbi, averageBpm, averageIbi, sleepTime, sleepTimeId, createDate, rating)
+    constructor(averageBpm: Int, maxBpm: Int, minBpm: Int, averageIbi: Int, maxIbi: Int, minIbi: Int, createDate: LocalDateTime, rating: Int)
+            : this(0, averageBpm, maxBpm, minBpm, averageIbi, maxIbi, minIbi, createDate, rating)
 }

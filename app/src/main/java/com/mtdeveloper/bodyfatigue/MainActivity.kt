@@ -9,9 +9,7 @@ import androidx.room.Room
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
 
 import com.mtdeveloper.bodyfatigue.database.dao.HeartRateDao
-import com.mtdeveloper.bodyfatigue.database.dao.SleepTimeDao
 import com.mtdeveloper.bodyfatigue.database.model.HeartRate
-import com.mtdeveloper.bodyfatigue.database.model.SleepTime
 import kotlinx.android.synthetic.main.activity_main.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -28,11 +26,11 @@ class MainActivity : AppCompatActivity() {
             AppDatabase::class.java, "AppDatabase"
         ).build()
 
-        val heartRateDao = db.heartRateDao()
-        val sleepTimeDao = db.sleepTimeDao()
+//        val heartRateDao = db.heartRateDao()
+//        val sleepTimeDao = db.sleepTimeDao()
 
-        Thread({
-            mock(heartRateDao, sleepTimeDao)
+//        Thread({
+//            mock(heartRateDao, sleepTimeDao)
 //            try{
 //                var asd = heartRateDao.getAll()
 //
@@ -45,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        }).start()
+//        }).start()
 
         textViewBPM.setText("Pomiar...")
         textViewIBI.setText("Pomiar...")
@@ -69,16 +67,6 @@ class MainActivity : AppCompatActivity() {
         buttonRestHeart.setOnClickListener {
             val restHeartIntent = Intent(this, RestHeartActivity::class.java)
             startActivity(restHeartIntent)
-        }
-
-        switchSleepMode.setOnClickListener {
-            if (switchSleepMode.isChecked) {
-
-                Toast.makeText(this, "Sleep mode", Toast.LENGTH_SHORT).show()
-            } else {
-
-                Toast.makeText(this, "Normal mode", Toast.LENGTH_SHORT).show()
-            }
         }
 
 //        var bluetoothService = BluetoothService()
@@ -105,69 +93,7 @@ class MainActivity : AppCompatActivity() {
 //        }).start()
     }
 
-    private fun mock(heartRateDao: HeartRateDao, sleepTimeDao: SleepTimeDao){
-        Log.i("Sleep", "START")
-        var startHour = 22
-        var current = "2022-04-28 ${startHour}:15:17"
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss")
-        val sleepStart = LocalDateTime.parse(current, formatter)
 
-        var st = SleepTime(sleepStart, LocalDateTime.MIN)
-        var stId = sleepTimeDao.insert(st)
-
-
-
-        for (i in 1..10) {
-            var bpmRnds = (40..140).random()
-            var ibiRnds = (700..1400).random()
-
-            var current = "2022-04-28 ${startHour}:15:17"
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss")
-            val dateTime = LocalDateTime.parse(current, formatter)
-
-            Log.i("date", "${dateTime}")
-
-            var hr = HeartRate(bpmRnds, ibiRnds, dateTime, stId.toInt())
-            heartRateDao.insert(hr)
-
-            Thread.sleep(100)
-
-            var bpmRnds2 = (40..140).random()
-            var ibiRnds2 = (700..1400).random()
-
-            var current2 = "2022-04-28 ${startHour}:20:28"
-            val dateTime2 = LocalDateTime.parse(current2, formatter)
-
-            var hr2 = HeartRate(bpmRnds2, ibiRnds2, dateTime2, stId.toInt())
-            heartRateDao.insert(hr2)
-
-            Thread.sleep(100)
-
-            var bpmRnds3 = (40..140).random()
-            var ibiRnds3 = (700..1400).random()
-
-            var current3 = "2022-04-28 ${startHour}:40:58"
-            val dateTime3 = LocalDateTime.parse(current3, formatter)
-
-            var hr3 = HeartRate(bpmRnds3, ibiRnds3, dateTime3, stId.toInt())
-            heartRateDao.insert(hr3)
-
-            startHour++
-
-            if(startHour == 24){
-                startHour = 0
-            }
-
-            Thread.sleep(100)
-        }
-
-        var current3 = "2022-04-29 8:40:58"
-        val sleepStop = LocalDateTime.parse(current3, formatter)
-
-        sleepTimeDao.updateSleepTime(stId.toInt(), sleepStop)
-
-        Log.i("Sleep", "STOP")
-    }
 
 
 }

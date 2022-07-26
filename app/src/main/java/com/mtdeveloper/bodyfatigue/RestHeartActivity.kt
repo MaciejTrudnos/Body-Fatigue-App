@@ -1,18 +1,22 @@
 package com.mtdeveloper.bodyfatigue
 
 import android.content.Intent
+import android.media.AudioManager
+import android.media.ToneGenerator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.room.Room
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
-import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
+import com.mtdeveloper.bodyfatigue.database.dao.HeartRateDao
+import com.mtdeveloper.bodyfatigue.database.model.HeartRate
 import kotlinx.android.synthetic.main.activity_rest_heart.*
+import java.time.LocalDateTime
 
 class RestHeartActivity : AppCompatActivity() {
+
+    private var bpm: Int = 0
+    private var ibi: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rest_heart)
@@ -25,155 +29,103 @@ class RestHeartActivity : AppCompatActivity() {
             AppDatabase::class.java, "AppDatabase"
         ).allowMainThreadQueries().build()
 
-        val lastSleepTime = db
-            .sleepTimeDao()
-            .getLastSleepTime()
+        val heartRateDao = db.heartRateDao()
 
-        val heartRateList = db
-            .heartRateDao()
-            .getLastSleepHeartRate(lastSleepTime.id)
-            .toList()
-
-        val allSleepTime = db
-            .sleepTimeDao()
-            .getAll()
-            .toList()
-
-        val allHeartRate = db
-            .heartRateDao()
-            .getAll()
-            .toList()
-
-        val heartRateStats = HeartRateStats()
-
-        val bpmHourlyStats = heartRateStats
-            .calculateHourlyAverageBpm(heartRateList)
-
-        val ibiHourlyStats = heartRateStats
-            .calculateHourlyAverageIbi(heartRateList)
-
-        val aaChartView = findViewById<AAChartView>(R.id.aa_chart_view)
-        val aaChartModel : AAChartModel = AAChartModel()
-            .chartType(AAChartType.Area)
-            .title("Średnie tętno spoczynkowe")
-            .dataLabelsEnabled(true)
-            .series(arrayOf(
-                AASeriesElement()
-                    .name("BPM")
-                    .data(bpmHourlyStats.map{it}.toTypedArray()),
-                AASeriesElement()
-                    .name("IBI")
-                    .data(ibiHourlyStats.map{it}.toTypedArray())
-            ))
-
-        aaChartView.aa_drawChartWithChartModel(aaChartModel)
-
-        val avgBpm = heartRateStats
-            .calculateAverage(bpmHourlyStats)
-
-        textViewAvgBpm.setText("${avgBpm}")
-
-        val maxBpm = heartRateStats
-            .getMax(bpmHourlyStats)
-
-        textViewMaxBpm.setText("${maxBpm}")
-
-        val minBpm = heartRateStats
-            .getMin(bpmHourlyStats)
-
-        textViewMinBpm.setText("${minBpm}")
-
-        val avgIbi = heartRateStats
-            .calculateAverage(ibiHourlyStats)
-
-        textViewAvgIbi.setText("${avgIbi}")
-
-        val maxIbi = heartRateStats
-            .getMax(ibiHourlyStats)
-
-        textViewMaxIbi.setText("${maxIbi}")
-
-        val minIbi = heartRateStats
-            .getMin(ibiHourlyStats)
-
-        textViewMinIbi.setText("${minIbi}")
-
-        val sleepTime = heartRateStats.CalculateSleepTime(lastSleepTime)
-        val sleepTimeText = heartRateStats.changeMinutesToTextTime(sleepTime)
-        textViewSleepTime.setText(sleepTimeText)
-
-        val diffTime = heartRateStats.calculateSleepTimeRelativePreviousNights(allSleepTime)
-        val relativePreviousNightsText = prepareRelativePreviousNightsText(diffTime)
-
-        textViewRelativeSleepTime.setText(relativePreviousNightsText)
-
-        val bpmRelativePreviousNights = heartRateStats.calculateBpmRelativePreviousNights(allHeartRate, avgBpm, lastSleepTime.id)
-        val bpmRelativePreviousNightsText = prepareBpmRelativePreviousNightsText(bpmRelativePreviousNights)
-
-        textViewRelativeBpm.setText(bpmRelativePreviousNightsText)
-
-        val ibiRelativePreviousNights = heartRateStats.calculateIbiRelativePreviousNights(allHeartRate, avgIbi, lastSleepTime.id)
-        val ibiRelativePreviousNightsText = prepareIbiRelativePreviousNightsText(ibiRelativePreviousNights)
-
-        textViewRelativeIbi.setText(ibiRelativePreviousNightsText)
-
-        buttonRestHeartRating.setOnClickListener {
-            val restHeartRatingDao = db.restHeartRatingDao()
-            val isRatingExists = restHeartRatingDao.isRatingExists(lastSleepTime.id)
-
-            if (isRatingExists) {
-                Toast.makeText(this, "Ocena została już dodana", Toast.LENGTH_SHORT)
-                    .show()
-
-                return@setOnClickListener
+        Thread(
+            {
+               mock()
             }
+        ).start()
 
-            val restHeartRatingIntent = Intent(this, RestHeartRatingActivity::class.java)
-            restHeartRatingIntent.putExtra("CurrentBPM", 0)
-            restHeartRatingIntent.putExtra("CurrentIBI", 0)
-            restHeartRatingIntent.putExtra("AverageBPM", avgBpm)
-            restHeartRatingIntent.putExtra("AverageIBI", avgIbi)
-            restHeartRatingIntent.putExtra("SleepTime", sleepTime)
-            restHeartRatingIntent.putExtra("SleepTimeId", lastSleepTime.id)
-            startActivity(restHeartRatingIntent)
+        buttonStartRH.setOnClickListener {
+            Thread(
+                {
+                    runTest(heartRateDao)
+                }
+            ).start()
         }
 
-        buttonRestHeartRatingStats.setOnClickListener {
+        buttonResultsRH.setOnClickListener {
             val restHeartRatingStatsIntent = Intent(this, RestHeartRatingStatsActivity::class.java)
             startActivity(restHeartRatingStatsIntent)
         }
     }
 
-    private fun prepareRelativePreviousNightsText(diffTime : Long) : String {
-        if (diffTime > 0) {
-            val hour = diffTime / 60
-            val min = diffTime % 60
+    private fun mock() {
+        while (true)
+        {
+            var bpmRnds = (40..140)
+                .random()
 
-            return "dłuższy o " + String.format("%d g %02d min", hour, min)
+            var ibiRnds = (700..1400)
+                .random()
 
-        }else{
-            val hour = Math.abs(diffTime) / 60
-            val min = Math.abs(diffTime) % 60
+            bpm = bpmRnds
+            ibi = ibiRnds
 
-            return "krótszy o " + String.format("%d g %02d min", hour, min)
+            runOnUiThread {
+                textViewBpmRH.setText("$bpmRnds")
+            }
+
+            runOnUiThread {
+                textViewIbiRH.setText("$ibiRnds")
+            }
+
+            Thread.sleep(1000)
         }
     }
 
-    private fun prepareBpmRelativePreviousNightsText(bpm : Int) : String {
-        if (bpm > 0) {
-            return "wyższe o ${bpm} bpm"
+    private fun runTest(heartRateDao: HeartRateDao) {
 
-        } else {
-            return "niższe o ${Math.abs(bpm)} bpm"
+        val localDateTime = LocalDateTime
+            .now()
+
+        val toneG = ToneGenerator(AudioManager.STREAM_ALARM, 100)
+
+        runOnUiThread {
+            buttonStartRH.setEnabled(false)
+            buttonResultsRH.setEnabled(false)
         }
+
+        startCountDown(heartRateDao, localDateTime)
+
+        runOnUiThread {
+            textViewCountDownTimerRH.setText("")
+            textViewInfoRH.setText("Test zakończony")
+        }
+
+        toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 1000)
+
+        runOnUiThread {
+            buttonStartRH.setEnabled(true)
+            buttonResultsRH.setEnabled(true)
+        }
+
+        val restHeartRatingIntent = Intent(this, RestHeartRatingActivity::class.java)
+        restHeartRatingIntent.putExtra("CreateDate", localDateTime.toString())
+        startActivity(restHeartRatingIntent)
     }
 
-    private fun prepareIbiRelativePreviousNightsText(ibi : Int) : String {
-        if (ibi > 0) {
-            return "wyższe o ${ibi} ms"
+    fun startCountDown(heartRateDao: HeartRateDao, localDateTime: LocalDateTime) {
+        var counter = 5
 
-        } else {
-            return "niższe o ${Math.abs(ibi)} ms"
+        runOnUiThread {
+            textViewInfoRH.setText("Nie poruszaj się przez kolejne:")
+        }
+
+        while (counter >= 0) {
+
+            runOnUiThread {
+                textViewCountDownTimerRH.setText("$counter sekund")
+            }
+
+            val data =HeartRate(bpm, ibi, localDateTime)
+
+            heartRateDao.insert(data)
+
+            Thread.sleep(1000)
+
+            counter--
         }
     }
 }

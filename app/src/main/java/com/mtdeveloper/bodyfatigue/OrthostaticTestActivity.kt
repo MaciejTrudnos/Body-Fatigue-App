@@ -10,11 +10,8 @@ import com.mtdeveloper.bodyfatigue.database.AppDatabase
 import com.mtdeveloper.bodyfatigue.database.PositionTest
 import com.mtdeveloper.bodyfatigue.database.dao.OrthostaticTestDao
 import com.mtdeveloper.bodyfatigue.database.model.OrthostaticTest
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_orthostatic_test.*
-import kotlinx.android.synthetic.main.activity_rest_heart_rating.*
 import java.time.LocalDateTime
-import java.util.*
 
 class OrthostaticTestActivity : AppCompatActivity() {
 

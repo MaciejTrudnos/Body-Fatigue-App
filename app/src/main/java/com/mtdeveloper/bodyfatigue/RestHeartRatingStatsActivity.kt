@@ -28,41 +28,45 @@ class RestHeartRatingStatsActivity : AppCompatActivity() {
         ).allowMainThreadQueries().build()
 
         val restHeartRatingDao = db.restHeartRatingDao()
-        val restHeartRatingList = restHeartRatingDao
+
+        val restHeartRatingResults = restHeartRatingDao
             .getAll()
             .toList()
 
         val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
-        val dateRating = restHeartRatingList
+        val dateRating = restHeartRatingResults
             .map{it.createDate.format(dateFormat)}
             .toTypedArray()
 
         val aaChartView = findViewById<AAChartView>(R.id.aa_chart_view)
         val aaChartModel : AAChartModel = AAChartModel()
             .chartType(AAChartType.Area)
-            .title("Średnie tętno spoczynkowe")
+            .title("Wyniki pomiarów")
             .categories(dateRating)
             .dataLabelsEnabled(true)
             .series(arrayOf(
                 AASeriesElement()
-                    .name("BPM podczas oceny")
-                    .data(restHeartRatingList.map{it.currentBpm}.toTypedArray()),
-                AASeriesElement()
-                    .name("IBI podczas oceny")
-                    .data(restHeartRatingList.map{it.currentIbi}.toTypedArray()),
-                AASeriesElement()
                     .name("Średnie BPM")
-                    .data(restHeartRatingList.map{it.averageBpm}.toTypedArray()),
+                    .data(restHeartRatingResults.map{it.averageBpm}.toTypedArray()),
+                AASeriesElement()
+                    .name("Maksymalne BPM")
+                    .data(restHeartRatingResults.map{it.maxBpm}.toTypedArray()),
+                AASeriesElement()
+                    .name("Minimalne BPM")
+                    .data(restHeartRatingResults.map{it.minBpm}.toTypedArray()),
                 AASeriesElement()
                     .name("Średnie IBI")
-                    .data(restHeartRatingList.map{it.averageIbi}.toTypedArray()),
+                    .data(restHeartRatingResults.map{it.averageIbi}.toTypedArray()),
                 AASeriesElement()
-                    .name("Czas snu w minutach")
-                    .data(restHeartRatingList.map{it.sleepTime}.toTypedArray()),
+                    .name("Maksymalne IBI")
+                    .data(restHeartRatingResults.map{it.maxIbi}.toTypedArray()),
+                AASeriesElement()
+                    .name("Minimalne IBI")
+                    .data(restHeartRatingResults.map{it.minIbi}.toTypedArray()),
                 AASeriesElement()
                     .name("Ocena")
-                    .data(restHeartRatingList.map{it.rating}.toTypedArray())
+                    .data(restHeartRatingResults.map{it.rating}.toTypedArray())
             ))
 
         aaChartView.aa_drawChartWithChartModel(aaChartModel)
@@ -72,17 +76,16 @@ class RestHeartRatingStatsActivity : AppCompatActivity() {
         listViewRating.adapter = adapter
 
         listViewRating.setOnItemClickListener { parent, view, position, id ->
-            val stats = restHeartRatingList[position]
+            val stats = restHeartRatingResults[position]
 
-            val heartRateStats = HeartRateStats()
-            val sleepTime = heartRateStats
-                .changeMinutesToTextTime(stats.sleepTime.toLong())
+            val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
-            val text =  "BPM podczas oceny: ${stats.currentBpm}" + "\n" +
-                        "IBI podczas oceny: ${stats.currentIbi}" + "\n" +
-                        "Średnie BPM: ${stats.averageBpm}" + "\n" +
+            val text =  "Średnie BMP: ${stats.averageBpm}" + "\n" +
+                        "Max BPM: ${stats.maxBpm}" + "\n" +
+                        "Min BPM: ${stats.minBpm}" + "\n" +
                         "Średnie IBI: ${stats.averageIbi}" + "\n" +
-                        "Czas snu: $sleepTime" + "\n" +
+                        "Max IBI: ${stats.maxIbi}" + "\n" +
+                        "Min IBI: ${stats.minIbi}" + "\n" +
                         "Ocena: ${stats.rating}"
 
             val alertDialog = AlertDialog.Builder(this)

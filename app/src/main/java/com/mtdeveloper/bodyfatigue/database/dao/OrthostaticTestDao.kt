@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.mtdeveloper.bodyfatigue.database.model.OrthostaticTest
-import com.mtdeveloper.bodyfatigue.database.model.RestHeartRating
 import java.time.LocalDateTime
 
 @Dao
