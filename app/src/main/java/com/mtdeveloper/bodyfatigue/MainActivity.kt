@@ -1,18 +1,17 @@
 package com.mtdeveloper.bodyfatigue
 
+import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
-
-import com.mtdeveloper.bodyfatigue.database.dao.HeartRateDao
-import com.mtdeveloper.bodyfatigue.database.model.HeartRate
 import kotlinx.android.synthetic.main.activity_main.*
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 class MainActivity : AppCompatActivity() {
@@ -21,43 +20,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "AppDatabase"
-        ).build()
-
-//        val heartRateDao = db.heartRateDao()
-//        val sleepTimeDao = db.sleepTimeDao()
-
-//        Thread({
-//            mock(heartRateDao, sleepTimeDao)
-//            try{
-//                var asd = heartRateDao.getAll()
-//
-//                asd.forEach {
-//                    Log.i("db", "${it.id}, ${it.bpm}, ${it.ibi}, ${it.type}, ${it.createDate}, ${it.sleepTimeId}")
-//                }
-//            }catch (ex: Exception){
-//                Log.e("myerror", ex.message.toString())
-//            }
-
-
-
-//        }).start()
-
-        textViewBPM.setText("Pomiar...")
-        textViewIBI.setText("Pomiar...")
-
-//        button.setOnClickListener{
-//            Thread({
-//                var result = heartRateDao.getAll().toList()
-//                result.forEach {
-//                    Log.i("db", "${it.id}, ${it.bpm}, ${it.ibi}, ${it.type}, ${it.createDate}")
-//                }
-//            }).start()
-//
-//
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestMultiplePermissions.launch(arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT))
+        } else {
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            requestBluetooth.launch(enableBtIntent)
+        }
 
         buttonOrthostaticTest.setOnClickListener {
             val orthostaticTestIntent = Intent(this, OrthostaticTestActivity::class.java)
@@ -68,32 +36,21 @@ class MainActivity : AppCompatActivity() {
             val restHeartIntent = Intent(this, RestHeartActivity::class.java)
             startActivity(restHeartIntent)
         }
-
-//        var bluetoothService = BluetoothService()
-//        var bluetoothSocket = bluetoothService.connect()
-//
-//        Thread({
-//            while (true)
-//            {
-//                var data = bluetoothService
-//                    .readBluetoothData(bluetoothSocket)
-//                    .split(";").toList()
-//
-//                Log.i("btdata1", data[0])
-//                Log.i("btdata2", data[1])
-//
-//                runOnUiThread {
-//                    textViewBPM.setText(data[0])
-//                }
-//
-//                runOnUiThread {
-//                    textViewIBI.setText(data[1])
-//                }
-//            }
-//        }).start()
     }
 
+    private var requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            Log.d("bt-permissions", "granted")
+        }else{
+            Log.d("bt-permissions", "deny")
+        }
+    }
 
-
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.d("bt-permissions", "${it.key} = ${it.value}")
+            }
+        }
 
 }

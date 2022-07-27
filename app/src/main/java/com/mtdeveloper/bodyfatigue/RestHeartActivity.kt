@@ -7,15 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.room.Room
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
-import com.mtdeveloper.bodyfatigue.database.dao.HeartRateDao
 import com.mtdeveloper.bodyfatigue.database.model.HeartRate
+import kotlinx.android.synthetic.main.activity_orthostatic_test.*
 import kotlinx.android.synthetic.main.activity_rest_heart.*
 import java.time.LocalDateTime
 
 class RestHeartActivity : AppCompatActivity() {
 
-    private var bpm: Int = 0
-    private var ibi: Int = 0
+    private var save: Boolean = false
+    private val localDateTime : LocalDateTime = LocalDateTime.now()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,16 +31,10 @@ class RestHeartActivity : AppCompatActivity() {
 
         val heartRateDao = db.heartRateDao()
 
-        Thread(
-            {
-               mock()
-            }
-        ).start()
-
         buttonStartRH.setOnClickListener {
             Thread(
                 {
-                    runTest(heartRateDao)
+                    runTest()
                 }
             ).start()
         }
@@ -49,36 +43,43 @@ class RestHeartActivity : AppCompatActivity() {
             val restHeartRatingStatsIntent = Intent(this, RestHeartRatingStatsActivity::class.java)
             startActivity(restHeartRatingStatsIntent)
         }
+
+        var bluetoothService = BluetoothService()
+        var bluetoothSocket = bluetoothService.connect()
+
+        Thread({
+            while (true)
+            {
+                var data = bluetoothService
+                    .readBluetoothData(bluetoothSocket)
+                    .split(";").toList()
+
+                var bpm = data[0]
+                    .filterNot{ it.isWhitespace() }
+                    .toInt()
+
+                var ibi = data[1]
+                    .filterNot{ it.isWhitespace() }
+                    .toInt()
+
+                if(save == true){
+                    val btData = HeartRate(bpm, ibi, localDateTime)
+                    heartRateDao.insert(btData)
+                }
+
+                runOnUiThread {
+                    textViewBpmRH.setText(data[0])
+                }
+
+                runOnUiThread {
+                    textViewIbiRH.setText(data[1])
+                }
+            }
+        }).start()
     }
 
-    private fun mock() {
-        while (true)
-        {
-            var bpmRnds = (40..140)
-                .random()
-
-            var ibiRnds = (700..1400)
-                .random()
-
-            bpm = bpmRnds
-            ibi = ibiRnds
-
-            runOnUiThread {
-                textViewBpmRH.setText("$bpmRnds")
-            }
-
-            runOnUiThread {
-                textViewIbiRH.setText("$ibiRnds")
-            }
-
-            Thread.sleep(1000)
-        }
-    }
-
-    private fun runTest(heartRateDao: HeartRateDao) {
-
-        val localDateTime = LocalDateTime
-            .now()
+    private fun runTest() {
+        save = true
 
         val toneG = ToneGenerator(AudioManager.STREAM_ALARM, 100)
 
@@ -87,7 +88,7 @@ class RestHeartActivity : AppCompatActivity() {
             buttonResultsRH.setEnabled(false)
         }
 
-        startCountDown(heartRateDao, localDateTime)
+        startCountDown()
 
         runOnUiThread {
             textViewCountDownTimerRH.setText("")
@@ -101,13 +102,15 @@ class RestHeartActivity : AppCompatActivity() {
             buttonResultsRH.setEnabled(true)
         }
 
+        save = false
+
         val restHeartRatingIntent = Intent(this, RestHeartRatingActivity::class.java)
         restHeartRatingIntent.putExtra("CreateDate", localDateTime.toString())
         startActivity(restHeartRatingIntent)
     }
 
-    fun startCountDown(heartRateDao: HeartRateDao, localDateTime: LocalDateTime) {
-        var counter = 5
+    fun startCountDown() {
+        var counter = 60
 
         runOnUiThread {
             textViewInfoRH.setText("Nie poruszaj się przez kolejne:")
@@ -118,10 +121,6 @@ class RestHeartActivity : AppCompatActivity() {
             runOnUiThread {
                 textViewCountDownTimerRH.setText("$counter sekund")
             }
-
-            val data =HeartRate(bpm, ibi, localDateTime)
-
-            heartRateDao.insert(data)
 
             Thread.sleep(1000)
 
