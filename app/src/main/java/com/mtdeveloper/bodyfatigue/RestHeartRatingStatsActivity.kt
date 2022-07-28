@@ -33,7 +33,7 @@ class RestHeartRatingStatsActivity : AppCompatActivity() {
             .getAll()
             .toList()
 
-        val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
 
         val dateRating = restHeartRatingResults
             .map{it.createDate.format(dateFormat)}
@@ -78,7 +78,7 @@ class RestHeartRatingStatsActivity : AppCompatActivity() {
         listViewRating.setOnItemClickListener { parent, view, position, id ->
             val stats = restHeartRatingResults[position]
 
-            val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+            val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
 
             val text =  "Średnie BMP: ${stats.averageBpm}" + "\n" +
                         "Max BPM: ${stats.maxBpm}" + "\n" +

@@ -33,7 +33,7 @@ class OrthostaticTestRatingStatsActivity : AppCompatActivity() {
             .getAll()
             .toList()
 
-        val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
 
         val dateRating = orthostaticTestResults
             .map{it.createDate.format(dateFormat)}
@@ -102,7 +102,7 @@ class OrthostaticTestRatingStatsActivity : AppCompatActivity() {
         listViewRating.setOnItemClickListener { parent, view, position, id ->
             val stats = orthostaticTestResults[position]
 
-            val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+            val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
 
             val text =  "Średnie BMP leżąc: ${stats.averageLyingBPM}" + "\n" +
                     "Max BPM leżąc: ${stats.maxLyingBPM}" + "\n" +

@@ -150,8 +150,6 @@ class OrthostaticTestRatingActivity : AppCompatActivity() {
         textViewDiffIbi.setText("${Math.abs(diffPositionIbi)}")
 
         buttonSaveRatingOrthostaticTest.setOnClickListener {
-            val createDate = LocalDateTime.now()
-
             val command = OrthostaticTestRating(averageLyingBPM, maxLyingBPM, minLyingBPM, averageStandingBPM, maxStandingBPM, minStandingBPM, averageLyingIBI, maxLyingIBI, minLyingIBI, averageStandingIBI, maxStandingIBI, minStandingIBI, Math.abs(diffPositionBpm), Math.abs(diffPositionIbi), createDate, np.value)
 
             orthostaticTestRatingDao.insert(command)

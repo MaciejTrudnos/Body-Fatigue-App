@@ -99,8 +99,6 @@ class RestHeartRatingActivity : AppCompatActivity() {
         textViewMinIbi.setText("${minIBI}")
 
         buttonRestHeartRatingStats.setOnClickListener {
-            val createDate = LocalDateTime.now()
-
             val command = RestHeartRating(averageBPM, maxBPM, minBPM, averageIBI, maxIBI, minIBI, createDate, np.value )
 
             restHeartRatingDao.insert(command)
