@@ -1,18 +1,19 @@
 package com.mtdeveloper.bodyfatigue
 
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
 import com.mtdeveloper.bodyfatigue.database.PositionTest
-import com.mtdeveloper.bodyfatigue.database.dao.OrthostaticTestDao
 import com.mtdeveloper.bodyfatigue.database.model.OrthostaticTest
 import kotlinx.android.synthetic.main.activity_orthostatic_test.*
 import java.time.LocalDateTime
+
 
 class OrthostaticTestActivity : AppCompatActivity() {
 
@@ -47,25 +48,38 @@ class OrthostaticTestActivity : AppCompatActivity() {
             startActivity(orthostaticTestRatingStatsIntent)
         }
 
-        var bluetoothService = BluetoothService()
-        var bluetoothSocket = bluetoothService.connect()
+        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (!mBluetoothAdapter.isEnabled) {
+            textViewBpm.setText("")
+            textViewIbi.setText("")
+            textView26.setText("")
+            textView25.setText("")
+
+            Toast.makeText(this, "Bluetooth wyłączone!", Toast.LENGTH_SHORT)
+                .show()
+
+            return
+        }
+
+        val bluetoothService = BluetoothService()
+        val bluetoothSocket = bluetoothService.connect()
 
         Thread({
             while (true)
             {
-                var data = bluetoothService
+                val data = bluetoothService
                     .readBluetoothData(bluetoothSocket)
                     .split(";").toList()
 
-                var bpm = data[0]
+                val bpm = data[0]
                     .filterNot{ it.isWhitespace() }
                     .toInt()
 
-                var ibi = data[1]
+                val ibi = data[1]
                     .filterNot{ it.isWhitespace() }
                     .toInt()
 
-                if(save == true){
+                if (save == true){
                     val btData = OrthostaticTest(bpm, ibi, position, localDateTime )
                     orthostaticTestDao.insert(btData)
                 }
@@ -93,22 +107,17 @@ class OrthostaticTestActivity : AppCompatActivity() {
 
         position = PositionTest.Lying
 
-        startCountDown()
-
-        runOnUiThread {
-            textViewCountDownTimer.setText("")
-            textViewInfo.setText("Wstań")
-        }
+        startCountDown("Nie poruszaj się przez kolejne:", 60)
 
         position = PositionTest.Standing
 
         toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 1000)
 
         save = false
-        Thread.sleep(5000)
+        startCountDown("Wstań", 30)
         save = true
 
-        startCountDown()
+        startCountDown("Nie poruszaj się przez kolejne:", 60)
 
         runOnUiThread {
             textViewCountDownTimer.setText("")
@@ -129,11 +138,11 @@ class OrthostaticTestActivity : AppCompatActivity() {
         startActivity(orthostaticTestRatingIntent)
     }
 
-    fun startCountDown() {
-        var counter = 60
+    fun startCountDown(text: String, count: Int) {
+        var counter = count
 
         runOnUiThread {
-            textViewInfo.setText("Nie poruszaj się przez kolejne:")
+            textViewInfo.setText("$text")
         }
 
         while (counter >= 0) {

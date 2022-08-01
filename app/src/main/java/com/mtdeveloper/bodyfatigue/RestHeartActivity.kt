@@ -1,10 +1,12 @@
 package com.mtdeveloper.bodyfatigue
 
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.room.Room
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
 import com.mtdeveloper.bodyfatigue.database.model.HeartRate
@@ -44,25 +46,38 @@ class RestHeartActivity : AppCompatActivity() {
             startActivity(restHeartRatingStatsIntent)
         }
 
-        var bluetoothService = BluetoothService()
-        var bluetoothSocket = bluetoothService.connect()
+        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (!mBluetoothAdapter.isEnabled) {
+            textViewBpmRH.setText("")
+            textViewIbiRH.setText("")
+            textView3.setText("")
+            textView4.setText("")
+
+            Toast.makeText(this, "Bluetooth wyłączone!", Toast.LENGTH_SHORT)
+                .show()
+
+            return
+        }
+
+        val bluetoothService = BluetoothService()
+        val bluetoothSocket = bluetoothService.connect()
 
         Thread({
             while (true)
             {
-                var data = bluetoothService
+                val data = bluetoothService
                     .readBluetoothData(bluetoothSocket)
                     .split(";").toList()
 
-                var bpm = data[0]
+                val bpm = data[0]
                     .filterNot{ it.isWhitespace() }
                     .toInt()
 
-                var ibi = data[1]
+                val ibi = data[1]
                     .filterNot{ it.isWhitespace() }
                     .toInt()
 
-                if(save == true){
+                if (save == true){
                     val btData = HeartRate(bpm, ibi, localDateTime)
                     heartRateDao.insert(btData)
                 }
