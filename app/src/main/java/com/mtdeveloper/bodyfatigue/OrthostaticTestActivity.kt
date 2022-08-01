@@ -55,6 +55,8 @@ class OrthostaticTestActivity : AppCompatActivity() {
             textView26.setText("")
             textView25.setText("")
 
+            buttonStart.setEnabled(false)
+
             Toast.makeText(this, "Bluetooth wyłączone!", Toast.LENGTH_SHORT)
                 .show()
 

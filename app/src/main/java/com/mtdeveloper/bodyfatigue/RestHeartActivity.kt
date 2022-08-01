@@ -53,6 +53,8 @@ class RestHeartActivity : AppCompatActivity() {
             textView3.setText("")
             textView4.setText("")
 
+            buttonStartRH.setEnabled(false)
+
             Toast.makeText(this, "Bluetooth wyłączone!", Toast.LENGTH_SHORT)
                 .show()
 
