@@ -26,7 +26,7 @@ class RestHeartRatingActivity : AppCompatActivity() {
         val np = numberPickerRH
         np.minValue = 1
         np.maxValue = 4
-        np.displayedValues = arrayOf("Wypoczęty","Przeciętnie wypoczęty","Duże zmęczenie","Przemęczenie")
+        np.displayedValues = arrayOf("Wypoczęty","Przeciętnie wypoczęty","Zmęczony","Przemęczony")
 
         val db = Room.databaseBuilder(
             applicationContext,

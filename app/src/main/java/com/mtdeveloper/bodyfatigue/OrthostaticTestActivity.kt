@@ -116,7 +116,7 @@ class OrthostaticTestActivity : AppCompatActivity() {
         toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 1000)
 
         save = false
-        startCountDown("Wstań", 30)
+        startCountDown("Wstań", 20)
         save = true
 
         startCountDown("Nie poruszaj się przez kolejne:", 60)

@@ -106,7 +106,7 @@ class OrthostaticTestRatingStatsActivity : AppCompatActivity() {
 
             val text =  "Średnie BMP leżąc: ${stats.averageLyingBPM}" + "\n" +
                     "Max BPM leżąc: ${stats.maxLyingBPM}" + "\n" +
-                    "Min BPM stojąc: ${stats.minLyingBPM}" + "\n" +
+                    "Min BPM leżąc: ${stats.maxLyingBPM}" + "\n" +
                     "Średnie BPM stojąc: ${stats.averageStandingBPM}" + "\n" +
                     "Max BPM stojąc: ${stats.maxStandingBPM}" + "\n" +
                     "Min BPM stojąc: ${stats.minStandingBPM}" + "\n" +

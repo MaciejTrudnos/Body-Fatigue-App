@@ -26,7 +26,7 @@ class OrthostaticTestRatingActivity : AppCompatActivity() {
         val np = numberPicker
         np.minValue = 1
         np.maxValue = 4
-        np.displayedValues = arrayOf("Wypoczęty","Przeciętnie wypoczęty","Duże zmęczenie","Przemęczenie")
+        np.displayedValues = arrayOf("Wypoczęty","Przeciętnie wypoczęty","Zmęczony","Przemęczony")
 
         val receivedOrthostaticTestIntent = getIntent()
 
@@ -150,7 +150,7 @@ class OrthostaticTestRatingActivity : AppCompatActivity() {
         textViewDiffIbi.setText("${Math.abs(diffPositionIbi)}")
 
         buttonSaveRatingOrthostaticTest.setOnClickListener {
-            val command = OrthostaticTestRating(averageLyingBPM, maxLyingBPM, minLyingBPM, averageStandingBPM, maxStandingBPM, minStandingBPM, averageLyingIBI, maxLyingIBI, minLyingIBI, averageStandingIBI, maxStandingIBI, minStandingIBI, Math.abs(diffPositionBpm), Math.abs(diffPositionIbi), createDate, np.value)
+            val command = OrthostaticTestRating(averageLyingBPM, maxLyingBPM, minLyingBPM, averageLyingIBI, maxLyingIBI, minLyingIBI, averageStandingBPM, maxStandingBPM, minStandingBPM, averageStandingIBI, maxStandingIBI, minStandingIBI, Math.abs(diffPositionBpm), Math.abs(diffPositionIbi), createDate, np.value)
 
             orthostaticTestRatingDao.insert(command)
 
