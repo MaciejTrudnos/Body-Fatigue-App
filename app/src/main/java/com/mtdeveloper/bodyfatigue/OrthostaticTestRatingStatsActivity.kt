@@ -1,5 +1,7 @@
 package com.mtdeveloper.bodyfatigue
 
+import android.content.DialogInterface
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -122,6 +124,12 @@ class OrthostaticTestRatingStatsActivity : AppCompatActivity() {
 
             val alertDialog = AlertDialog.Builder(this)
                 .setTitle(stats.createDate.format(dateFormat))
+                .setPositiveButton("Szczegóły"){dialogInterface, which ->
+                    val orthostaticTestRatingIntent = Intent(this, OrthostaticTestRatingActivity::class.java)
+                    orthostaticTestRatingIntent.putExtra("CreateDate", stats.createDate.toString())
+                    orthostaticTestRatingIntent.putExtra("HideRating", true)
+                    startActivity(orthostaticTestRatingIntent)
+                }
                 .setMessage(text)
 
             alertDialog.show()

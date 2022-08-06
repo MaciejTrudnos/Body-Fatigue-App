@@ -1,6 +1,8 @@
 package com.mtdeveloper.bodyfatigue
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
@@ -10,6 +12,7 @@ import com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
 import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
 import com.mtdeveloper.bodyfatigue.database.AppDatabase
 import com.mtdeveloper.bodyfatigue.database.model.RestHeartRating
+import kotlinx.android.synthetic.main.activity_orthostatic_test_rating.*
 import kotlinx.android.synthetic.main.activity_rest_heart_rating.*
 import java.time.LocalDateTime
 
@@ -40,6 +43,16 @@ class RestHeartRatingActivity : AppCompatActivity() {
 
         val receivedCreateDate = receivedRestHeartRatingIntent
             .getStringExtra("CreateDate")
+
+        val receivedHideRating = receivedRestHeartRatingIntent
+            .getBooleanExtra("HideRating", false)
+
+        if (receivedHideRating == true) {
+            actionBar!!.title = "Szczegóły"
+            np.setVisibility(View.GONE)
+            buttonRestHeartRatingStats.setVisibility(View.GONE)
+            textView15.setVisibility(View.GONE)
+        }
 
         val createDate = LocalDateTime.parse(receivedCreateDate)
 

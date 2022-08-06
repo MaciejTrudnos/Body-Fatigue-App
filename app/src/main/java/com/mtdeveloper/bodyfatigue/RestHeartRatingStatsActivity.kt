@@ -1,7 +1,9 @@
 package com.mtdeveloper.bodyfatigue
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
@@ -90,6 +92,12 @@ class RestHeartRatingStatsActivity : AppCompatActivity() {
 
             val alertDialog = AlertDialog.Builder(this)
                 .setTitle(stats.createDate.format(dateFormat))
+                .setPositiveButton("Szczegóły"){dialogInterface, which ->
+                    val restHeartRatingActivityIntent = Intent(this, RestHeartRatingActivity::class.java)
+                    restHeartRatingActivityIntent.putExtra("CreateDate", stats.createDate.toString())
+                    restHeartRatingActivityIntent.putExtra("HideRating", true)
+                    startActivity(restHeartRatingActivityIntent)
+                }
                 .setMessage(text)
 
             alertDialog.show()
