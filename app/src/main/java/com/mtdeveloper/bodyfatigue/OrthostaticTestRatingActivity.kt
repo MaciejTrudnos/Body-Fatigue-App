@@ -14,6 +14,7 @@ import com.mtdeveloper.bodyfatigue.database.PositionTest
 import com.mtdeveloper.bodyfatigue.database.model.OrthostaticTestRating
 import kotlinx.android.synthetic.main.activity_orthostatic_test_rating.*
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class OrthostaticTestRatingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,14 +38,15 @@ class OrthostaticTestRatingActivity : AppCompatActivity() {
         val receivedHideRating = receivedOrthostaticTestIntent
             .getBooleanExtra("HideRating", false)
 
+        val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+        val createDate = LocalDateTime.parse(receivedCreateDate)
+
         if (receivedHideRating == true) {
-            actionBar!!.title = "Szczegóły"
+            actionBar!!.title = "Szczegóły z ${createDate.format(dateFormat)}"
             np.setVisibility(View.GONE)
             buttonSaveRatingOrthostaticTest.setVisibility(View.GONE)
             textView41.setVisibility(View.GONE)
         }
-
-        val createDate = LocalDateTime.parse(receivedCreateDate)
 
         val db = Room.databaseBuilder(
             applicationContext,

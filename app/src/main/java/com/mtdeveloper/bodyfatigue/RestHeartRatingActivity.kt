@@ -15,6 +15,7 @@ import com.mtdeveloper.bodyfatigue.database.model.RestHeartRating
 import kotlinx.android.synthetic.main.activity_orthostatic_test_rating.*
 import kotlinx.android.synthetic.main.activity_rest_heart_rating.*
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class RestHeartRatingActivity : AppCompatActivity() {
 
@@ -47,14 +48,15 @@ class RestHeartRatingActivity : AppCompatActivity() {
         val receivedHideRating = receivedRestHeartRatingIntent
             .getBooleanExtra("HideRating", false)
 
+        val dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+        val createDate = LocalDateTime.parse(receivedCreateDate)
+
         if (receivedHideRating == true) {
-            actionBar!!.title = "Szczegóły"
+            actionBar!!.title = "Szczegóły z ${createDate.format(dateFormat)}"
             np.setVisibility(View.GONE)
             buttonRestHeartRatingStats.setVisibility(View.GONE)
             textView15.setVisibility(View.GONE)
         }
-
-        val createDate = LocalDateTime.parse(receivedCreateDate)
 
         val heartRateResults = heartRateDao
             .getByCreateDate(createDate)
