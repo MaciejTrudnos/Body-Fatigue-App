@@ -1,29 +1,13 @@
-# README #
+# Body Fatigue App #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+It is a mobile app prepared for bluetooth connectivity with a [Body Fatigue Device](https://github.com/MaciejTrudnos/Body-Fatigue-Device) </br>
+It allows analyze resting heart rate and perform an orthostatic test </br>
+User can rate body fatigue level by heart rate and analyze results on the graphs
 
-### What is this repository for? ###
+## Features
+- Analyze resting heart rate
+- Perform an orthostatic test
+- View collected data on the graphs
+- Data is stored in local db SQLite using Room library
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+![BodyFatigue](https://user-images.githubusercontent.com/35919087/204396245-e4c59c8f-f907-4a6d-af86-199532412280.png)
