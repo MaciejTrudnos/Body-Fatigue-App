@@ -1,12 +1,10 @@
 # Body Fatigue App #
-
-It is a mobile app prepared for bluetooth connectivity with a [Body Fatigue Device](https://github.com/MaciejTrudnos/Body-Fatigue-Device) </br>
-It allows analyze resting heart rate and perform an orthostatic test </br>
-User can rate body fatigue level by heart rate and analyze results on the charts
+A mobile app for analyzing resting heart rate and performing an orthostatic test using the [Body Fatigue Device](https://github.com/MaciejTrudnos/Body-Fatigue-Device)
 
 ## Features
 - Analyze resting heart rate
 - Perform an orthostatic test
+- Rate body fatigue level
 - View collected data on the charts
 - Data is stored in local SQLite database using Room library
 
